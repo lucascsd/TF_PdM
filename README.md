@@ -1,7 +1,7 @@
 CESE 15Co2021
 
 # Programación de microprocesadores
-## Practica final
+## Práctica final
 
 Repositorio para la práctica final de la materia Programación de Microcontroladores.
 
@@ -20,11 +20,10 @@ Autores: Lucas Zalazar lucas.zalazar6@gmail.com
  - Implementar MEF para controlar la memoria.
  - Implementar MEF para el antirebote de las teclas.
 
-#### Condiciones de funcionamiento
-###### Dependencias externas:
+### Dependencias externas:
  - sAPI.h;
 
-###### Periféricos:
+### Periféricos:
  - ADC;
  - UART;
  - GPIO;
@@ -32,7 +31,7 @@ Autores: Lucas Zalazar lucas.zalazar6@gmail.com
 #### Modularización
 ![](https://github.com/lucascsd/TF_PdM/blob/main/image/modularizacion.svg)
 
-#### Maquina de estado finito del controlador de memoria
+#### Máquina de estado finito del controlador de memoria
 ![](https://github.com/lucascsd/TF_PdM/blob/main/image/MEF_memoria_1.svg)
 
 #### Código del controlador de memoria
