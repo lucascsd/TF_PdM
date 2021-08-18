@@ -1,31 +1,45 @@
 CESE 15Co2021
 
 # Programación de microprocesadores
-## Practica 4
+## Practica final
 
-Repositorio para la cuarta práctica de la materia Programación de Microcontroladores.
+Repositorio para la práctica final de la materia Programación de Microcontroladores.
 
-Autores: Martin Rios jrios@fi.uba.ar - Lucas Zalazar lucas.zalazar6@gmail.com
+Autores: Lucas Zalazar lucas.zalazar6@gmail.com
 
 ### Resumen
-Implementar mediante el modelo de Máquina de Estados Finitos el antirrebote de teclas y la lógica de funcionamiento de un semáforo.
+La plataforma recibirá desde el ADC, datos para guardar en un buffer en memoria de tamaño a definir. 
+Se indicará el estado que posee y enviará por UART el contenido y estado de la memoria cada vez que se lo requiera. 
+La adquisición iniciará con el flanco ascendente de una tecla y se dejará de adquirir datos con el flanco descendente.
+Se chequeará la disponibilidad en memoria y se realizará la escritura en memoria. 
+El buffer está manejado por una MEF para verificación, escritura y lectura.
+Mediante UART, se indicará el estado de la memoria y el tipo de evento que se realiza  sobre la misma. 
+Se implementará un controlador para la UART como para el ADC.
+Se implementará una MEF para el antirebote de las teclas.
 
 #### Condiciones de funcionamiento
 ###### Dependencias externas:
  - sAPI.h;
- - Usar delay no bloqueantes;
+
+###### Periféricos:
+ - ADC;
+ - UART;
+ - GPIO;
 
 #### Modularización
-![](https://github.com/lucascsd/Practica4/blob/main/image/Capas_Ejercicio4.svg)
+![](https://github.com/lucascsd/TF_PdM/blob/main/image/modularizacion.svg)
+
+#### Maquina de estado finito del controlador de memoria
+![](https://github.com/lucascsd/TF_PdM/blob/main/image/MEF_memoria.svg)
 
 ###### Archivos de modularización
 | File name | hearders                    |
 | ------------- | ------------------------------ |
-| [ejercicio4.c](https://github.com/lucascsd/Practica4/blob/main/src/ejercicio4.c)|[ejercicio4.h](https://github.com/lucascsd/Practica4/blob/main/inc/ejercicio4.h)|
-| [semaforo.c](https://github.com/lucascsd/Practica4/blob/main/src/semaforo.c)|[semaforo.h](https://github.com/lucascsd/Practica4/blob/main/inc/semaforo.h)|
-| [led.c](https://github.com/lucascsd/Practica4/blob/main/src/led.c)|[led.h](https://github.com/lucascsd/Practica4/blob/main/inc/led.h)|
-| [teclas.c](https://github.com/lucascsd/Practica4/blob/main/src/teclas.c)|[teclas.h](https://github.com/lucascsd/Practica4/blob/main/inc/teclas.h)|
+| [TF_memoria.c](https://github.com/lucascsd/TF_PdM/blob/main/src/TF_memoria.c)|[TF_memoria.h](https://github.com/lucascsd/TF_PdM/blob/main/inc/TF_memoria.h)|
+| [controladorMEMORIA.c](https://github.com/lucascsd/TF_PdM/blob/main/src/controladorMEMORIA.c)|[controladorMEMORIA.h](https://github.com/lucascsd/TF_PdM/blob/main/inc/controladorMEMORIA.h)|
+| [controladorADC.c](https://github.com/lucascsd/TF_PdM/blob/main/src/controladorADC.c)|[controladorADC.h](https://github.com/lucascsd/TF_PdM/blob/main/inc/controladorADC.h)|
+| [controladorLED.c](https://github.com/lucascsd/TF_PdM/blob/main/src/controladorLED.c)|[controladorLED.h](https://github.com/lucascsd/TF_PdM/blob/main/inc/controladorLED.h)|
+| [controladorTECLA.c](https://github.com/lucascsd/TF_PdM/blob/main/src/controladorTECLA.c)|[controladorTECLA.h](https://github.com/lucascsd/TF_PdM/blob/main/inc/controladorTECLA.h)|
+| [controladorUART.c](https://github.com/lucascsd/TF_PdM/blob/main/src/controladorUART.c)|[controladorUART.h](https://github.com/lucascsd/TF_PdM/blob/main/inc/controladorUART.h)|
 
-### Notas de compilación
-Seleccionar el punto del ejercicio a compilar comentando o descomentando la macro correspondiente en el archivo [ejercicio4.h](https://github.com/lucascsd/Practica4/blob/main/inc/ejercicio4.h) 
 
