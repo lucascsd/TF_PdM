@@ -19,7 +19,7 @@ teclaFSM_t inicializarKeyFSM ( gpioMap_t key, uint8_t _indiceTecla ){
 			//tecla.indiceTecla = _indiceTecla,
 			_indiceTecla,
 			key,
-			TECLA_NO_PRESIONADA,
+			_TECLA_NO_PRESIONADA,
 			10
 	};
 	printStateKey( tecla.indiceTecla );
@@ -36,46 +36,46 @@ bool_t actualizarKeyFSM ( teclaFSM_t * tecla ){
 
 	switch ( tecla->estadoTecla ){
 
-	case TECLA_PRESIONADA:
+	case _TECLA_PRESIONADA:
 		if ( gpioRead ( tecla->teclaPosicion ) ) {
-			tecla->estadoTecla = TECLA_FLANCO_ASCENDENTE;
+			tecla->estadoTecla = _TECLA_FLANCO_ASCENDENTE;
 			printStateDebounce( tecla->estadoTecla );
 			delayInit( &tecla->retardoNoBloqueante, DEBOUNCE_TIME );
 		}
 		break;
 
-	case TECLA_FLANCO_ASCENDENTE:
+	case _TECLA_FLANCO_ASCENDENTE:
 		if ( delayRead ( &tecla->retardoNoBloqueante ) ) {
 			if ( gpioRead ( tecla->teclaPosicion ) ){
-				tecla->estadoTecla = TECLA_NO_PRESIONADA;
+				tecla->estadoTecla = _TECLA_NO_PRESIONADA;
 				printStateDebounce( tecla->estadoTecla );
 				changedState = TRUE;
 			}
-			else tecla->estadoTecla = TECLA_PRESIONADA;
+			else tecla->estadoTecla = _TECLA_PRESIONADA;
 		}
 		break;
 
-	case TECLA_NO_PRESIONADA:
+	case _TECLA_NO_PRESIONADA:
 		if ( !gpioRead ( tecla->teclaPosicion ) ){
-			tecla->estadoTecla = TECLA_FLANCO_DESCENDENTE;
+			tecla->estadoTecla = _TECLA_FLANCO_DESCENDENTE;
 			printStateDebounce( tecla->estadoTecla );
 			delayInit( &tecla->retardoNoBloqueante, DEBOUNCE_TIME );
 		}
 		break;
 
-	case TECLA_FLANCO_DESCENDENTE:
+	case _TECLA_FLANCO_DESCENDENTE:
 		if ( delayRead ( &tecla->retardoNoBloqueante ) ) {
 			if ( !gpioRead ( tecla->teclaPosicion ) ){
-				tecla->estadoTecla = TECLA_PRESIONADA;
+				tecla->estadoTecla = _TECLA_PRESIONADA;
 				printStateDebounce( tecla->estadoTecla );
 				changedState = TRUE;
 			}
-			else tecla->estadoTecla = TECLA_NO_PRESIONADA;
+			else tecla->estadoTecla = _TECLA_NO_PRESIONADA;
 		}
 		break;
 
 	default:
-		tecla->estadoTecla = TECLA_NO_PRESIONADA;
+		tecla->estadoTecla = _TECLA_NO_PRESIONADA;
 		break;
 	}
 	return changedState;

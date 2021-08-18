@@ -1,9 +1,10 @@
-/*
- * controladorLED.h
- *
- *  Created on: 16 ago. 2021
- *      Author: lucascsd
- */
+/*=============================================================================
+ * TP Final
+ * file: controladorLED.h
+ * Authors: Lucas Zalazar <lucas.zalazar6@gmail.com>
+ * Date: 2021/08/15
+ * Version: 1.0
+ *===========================================================================*/
 
 #ifndef PRACTICAFINAL_PDM_TF_MEMORIA_INC_CONTROLADORLED_H_
 #define PRACTICAFINAL_PDM_TF_MEMORIA_INC_CONTROLADORLED_H_

@@ -1,9 +1,10 @@
-/*
- * controladorLED.c
- *
- *  Created on: 16 ago. 2021
- *      Author: lucascsd
- */
+/*=============================================================================
+ * TP Final
+ * file: controladorLED.c
+ * Authors: Lucas Zalazar <lucas.zalazar6@gmail.com>
+ * Date: 2021/08/15
+ * Version: 1.0
+ *===========================================================================*/
 #include "controladorLED.h"
 
 //***** FUNCIÓN DE APAGADO DE LEDS *************************************************************

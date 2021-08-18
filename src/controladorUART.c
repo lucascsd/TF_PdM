@@ -49,21 +49,36 @@ void printStateKey( uint8_t teclaPresionada )
 void printStateMem( stateMem_t state ){
 
 	char *_estadoSecuencia[] = {
-			"\t\tMEMORY_RESET 		\n\r",
-			"\t\tMEMORY_ADQ 		\n\r",
-			"\t\tMEMORY_STATUS 		\n\r",
-			"\t\tMEMORY_WRITE 		\n\r",
-			"\t\tMEMORY_READ 		\n\r",
-			"\t\tMEMORY_WAIT_KEY	\n\r",
-			"\t\tMEMORY_CLEAN 		\n\r"
+			"\tMEMORY_RESET		\n\r",
+			"\tMEMORY_ADQ 		\n\r",
+			"\tMEMORY_STATUS 	\n\r",
+			"\tMEMORY_WRITE 	\n\r",
+			"\tMEMORY_READ 		\n\r",
+			"\tMEMORY_WAIT_KEY	\n\r",
+			"\tMEMORY_CLEAN 	\n\r"
 	};
 	uartWriteString( UART_USB, "MEF CONTROLADOR MEMORIA:");
 	uartWriteString( UART_USB, _estadoSecuencia[state] );
 
 }
 
-void printMemoryRead(){
+void printMemoryRead( memoryFSM_t * memory ){
 
+	bool_t readComplete = TRUE;
+	char indice[2], valor[10];
+
+	for ( uint8_t i = 0; i < memory->memorySize; i++)
+	{
+		itoa( i, indice, 10 ); /* 10 significa decimal */
+		uartWriteString( UART_USB, "DATO " );
+		uartWriteString( UART_USB, indice );
+		uartWriteString( UART_USB, " ALMACENADO:\t\t" );
+		/* Conversión de muestra entera a ascii con base decimal */
+		itoa( *( memory->ptrWrite + i ), valor, 10 ); /* 10 significa decimal */
+		/* Enviar muestra y Enter */
+		uartWriteString( UART_USB, valor );
+		uartWriteString( UART_USB, ";\r\n" );
+	}
 }
 
 void printAddressPtr( uint16_t	* dir ){

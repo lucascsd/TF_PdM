@@ -16,6 +16,6 @@
 void inicializarADC (); //Se inicializa y configura la adquisición ADC.
 void adquirirADC ( uint16_t * bufferAux );	//Adquiere ADC.
 void finalizarADC (); //Se deshabilita la adquisición de ADC.
-char* itoa(int value, char* result, int base);
+char* itoa ( uint16_t value, char* result, uint16_t base );
 
 #endif /* PRACTICAFINAL_PDM_TF_MEMORIA_INC_CONTROLADORADC_H_ */

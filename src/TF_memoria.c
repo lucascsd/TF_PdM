@@ -7,38 +7,39 @@
  *===========================================================================*/
 
 #include "TF_memoria.h"
-#include "sapi.h"
 
 int main( void )
 {
-   // ----- Setup -----------------------------------
-   boardInit();
+	// ----- Setup -----------------------------------
+	boardInit();
 
-   /* Verificación TICK_RATE rango permitido de tiempo: 1 a 50 ms */
-   if ( ( TICK_RATE < TICK_RATE_MIN ) || ( TICK_RATE > TICK_RATE_MAX ) )  blinkError( ERROR_TIME );
-   if ( !tickConfig ( TICK_RATE ) )  blinkError( ERROR_TIME );
+	/* Verificación TICK_RATE rango permitido de tiempo: 1 a 50 ms */
+	if ( ( TICK_RATE < TICK_RATE_MIN ) || ( TICK_RATE > TICK_RATE_MAX ) )  blinkError( ERROR_TIME );
+	if ( !tickConfig ( TICK_RATE ) )  blinkError( ERROR_TIME );
 
-   /* Inicialización de UART e impresión de menú */
-   inicializarUART();
-   infoUART();
+	/* Inicialización de UART e impresión de menú */
+	inicializarUART();
+	infoUART();
 
-   /* TODO: HACER LOCAL LA VARIABLE DEL TIPO memoryFSM_t */
-   /* Reset e inicialización de memoria */
-   rstCircularMemory ( );
+	/* Definición de estructura que contiene punteros, indicioes y tamaño de buffer */
+	memoryFSM_t memoryOne;
 
-   /* Se inicializa la MEF de las teclas */
-   teclaUNO 	= inicializarKeyFSM ( TEC1, KEY1 );
-   teclaDOS 	= inicializarKeyFSM ( TEC2, KEY2 );
-   teclaTRES 	= inicializarKeyFSM ( TEC3, KEY3 );
-   //teclaCUATRO 	= inicializarKeyFSM ( TEC4, KEY4 );
+	/* Reset e inicialización de memoria */
+	memoryOne = rstCircularMemory ( );
 
-   /* SUPER LOOP */
-   while( true ) {
-	   if ( !updateMemoryStatus() ) blinkError ( ERROR_TIME );
-   }
+	/* Se inicializa la MEF de las teclas */
+	teclaUNO 	= inicializarKeyFSM ( TEC1, KEY1 );
+	teclaDOS 	= inicializarKeyFSM ( TEC2, KEY2 );
+	teclaTRES 	= inicializarKeyFSM ( TEC3, KEY3 );
+	teclaCUATRO 	= inicializarKeyFSM ( TEC4, KEY4 );
 
-   // YOU NEVER REACH HERE, because this program runs directly or on a
-   // microcontroller and is not called by any Operating System, as in the 
-   // case of a PC program.
-   return 0;
+	/* SUPER LOOP */
+	while( true ) {
+		if ( !updateMemoryStatus( &memoryOne ) ) blinkError ( ERROR_TIME );
+	}
+
+	// YOU NEVER REACH HERE, because this program runs directly or on a
+	// microcontroller and is not called by any Operating System, as in the
+	// case of a PC program.
+	return 0;
 }

@@ -8,23 +8,23 @@
 
 #include "controladorMEMORIA.h"
 #include "controladorUART.h"
-#include "controladorLED.h"
-#include "controladorADC.h"
-
-/* Definición estructura del tipo memoryFSM_t */
-memoryFSM_t _memory;
 
 /* buffer de tamañó SIZEMEMORY */
-uint16_t buffer[SIZEMEMORY];
-uint16_t bufferAux[16];
+static uint16_t buffer[SIZEMEMORY];
+static uint16_t bufferAux[16];
 const gpioMap_t ledSequence[] = { LEDR, LEDG, LEDB, LED1, LED2, LED3 };
 
+//***** FUNCIÓN DE RESET DE MEMORIA ************************************************************
+// Recibe: VACIO.
+// Devuelve: ESTRUCTURA DEL TIPO memoryFSM_t CON VALORES POR DEFECTOS.
+// *********************************************************************************************
 memoryFSM_t rstCircularMemory ( )
 {
 	memoryFSM_t memoryAux = {
 			NULL,
 			NULL,
-			MEMORY_RESET,
+			_MEMORY_RESET,
+			0,
 			0,
 			0,
 			0
@@ -36,115 +36,154 @@ memoryFSM_t rstCircularMemory ( )
 
 }
 
+//***** FUNCIÓN DE INICIO DE MEMORIA ***********************************************************
+// Recibe: VACIO.
+// Devuelve: ESTRUCTURA DEL TIPO memoryFSM_t CON VALORES INICIALIZADOS.
+// *********************************************************************************************
 memoryFSM_t initCircularMemory ( )
 {
 
 	memoryFSM_t memoryAux;
-
+	/* SE INICIALIZA ESTRUCTURA */
 	memoryAux.ptrWrite = buffer;
 	memoryAux.ptrRead =	buffer;
-	memoryAux.memoryState = MEMORY_WAIT_KEY;
+	memoryAux.memoryState = _MEMORY_WAIT_KEY;
 	memoryAux.memorySize = SIZEMEMORY;
+	memoryAux.bufferSize = BLOQMEMORY;
 	memoryAux.indexW = 0;
 	memoryAux.indexR = 0;
 
+	/* SE IMPRIME ESTADO ACTUAL */
 	printStateMem( memoryAux.memoryState );
 
+	/* SE RETORNA LA ESTRUCTURA INICIALIZADA */
 	return memoryAux;
 }
 
-void writeMemory ( uint16_t *blockMemory, memoryFSM_t * memory )
+//***** FUNCIÓN DE ESCRITURA DE MEMORIA ********************************************************
+// Recibe: PUNTERO A ESTRUCTURA DEL TIPO memoryFSM_t CON VALORES POR DEFECTOS.
+// Devuelve: VOID.
+// *********************************************************************************************
+void writeMemory ( memoryFSM_t * memory )
 {
-	//TODO: FALTA FUNCION PARA ALMACENAR VALORES EN MEMORIA
-	//PASAR POSICION DEL PTR DE ESCRITURA, PTR y MEMORIA
+
+	/* SE ALMACENAN LOS VALORES LEIDOS DEL ADC ALMACENADOS
+	 * EN BUFFER AUXILIAR DE 16 VALORES
+	 */
 	for ( uint8_t i = 0; i < BLOQMEMORY; i++)
 	{
-		*(_memory.ptrWrite + _memory.indexW) = bufferAux[i];
-		_memory.indexW++;
+		*(memory->ptrWrite + memory->indexW) = bufferAux[i];
+		memory->indexW++;
 	}
-	_memory.memoryState = MEMORY_WAIT_KEY ;
-	printStateMem( _memory.memoryState );
+
 }
 
-bool_t readMemory ( uint16_t *blockMemory, memoryFSM_t * memory )
+//***** FUNCIÓN DE LECTURA DE MEMORIA *************************************************************
+// Recibe: 	PUNTERO A ESTRUCTURA DEL TIPO memoryFSM_t CON TODOS LOS VALORES ALMACENADOS EN MEMORIA.
+// Devuelve: VOID.
+// ************************************************************************************************
+void readMemory ( memoryFSM_t * memory )
+{
+
+	/* FUNCION DE IMPRESON DE VALORES */
+	printMemoryRead( memory );
+
+}
+
+//***** FUNCIÓN DE LECTURA DE MEMORIA EN BLOQUE DE 16 *********************************************
+// Recibe: 	PUNTERO A ESTRUCTURA DE TIPO memoryFSM_t CON TODOS LOS VALORES ALMACENADOS EN MEMORIA.
+// Devuelve: BOOLEANO CON EL ESTADO DE LA OPERACION FINALIZADO.
+// ************************************************************************************************
+bool_t readBlockMemory ( memoryFSM_t * memory )
 {
 	/* TODO: USAR PUNTERO DE
 	 * LECTURA PTRREAD.
 	 */
 	bool_t readComplete = TRUE;
-	for ( uint8_t i = 0; i < _memory.memorySize; i++)
-	{
-		printf ("\t\tDato %d: %d \n\r", i, *( _memory.ptrWrite + i ) );
-		printf ("\t\tDato %d: %d \n\r", i, buffer[i] );
-
-	}
-	_memory.memoryState = MEMORY_WAIT_KEY ;
-	printStateMem( _memory.memoryState );
-	return readComplete;
-}
-
-bool_t readBlockMemory ( uint16_t *blockMemory, memoryFSM_t * memory )
-{
-	/* TODO: USAR PUNTERO DE
-	 * LECTURA PTRREAD.
-	 */
-	bool_t readComplete = TRUE;
 	for ( uint8_t i = 0; i < BLOQMEMORY; i++)
 	{
-		printf ("\t\tDato %d: %d \n\r", _memory.indexR, *( _memory.ptrWrite + _memory.indexR ) );
+		printf ("\t\tDato %d: %d \n\r", memory->indexR, *( memory->ptrWrite + memory->indexR ) );
 		printf ("\t\tDato %d: %d \n\r", i, buffer[i] );
-		_memory.indexR++;
+		memory->indexR++;
 	}
-	_memory.memoryState = MEMORY_WAIT_KEY ;
-	printStateMem( _memory.memoryState );
+	memory->memoryState = _MEMORY_WAIT_KEY ;
+	printStateMem( memory->memoryState );
 	return readComplete;
 }
 
-bool_t cleanMemory ( uint16_t *blockMemory )
+//***** FUNCIÓN DE LIMPIEZA DE MEMORIA ***********************************************************
+// Recibe: 	PUNTERO A ESTRUCTURA DE TIPO memoryFSM_t CON TODOS LOS VALORES ALMACENADOS EN MEMORIA.
+// Devuelve: BOOLEANO CON EL ESTADO DE LA OPERACION FINALIZADO.
+// ***********************************************************************************************
+bool_t cleanMemory ( memoryFSM_t * memory )
 {
-	bool_t cleanComplete = TRUE;
-	/* TODO: HACER FUNCION PARA
-	 * BORRAR TODA LA MEMORIA CON
-	 * VALOR 0.
-	 */
+
+	bool_t lecturaCompleta = TRUE;
+
+	/* SE PONE A CERO CADA LUGAR DE MEMORIA */
 	for ( uint8_t i = 0; i < SIZEMEMORY; i++)
 	{
-		*(_memory.ptrWrite + i) = 0;
+
+		*(memory->ptrWrite + i) = 0;
 		if ( !( buffer[i] == 0 ) ) return FALSE;
+
 	}
-	return cleanComplete;
+
+	/* DEVUELVO EL ESTADO DE LA OPERACION */
+	return lecturaCompleta;
 }
 
-bool_t updateMemoryStatus ()
+//***** FUNCIÓN DE ACTUALIZACION DEL ESTADO DE MEMORIA *******************************************
+// Recibe: 	PUNTERO A ESTRUCTURA DE TIPO memoryFSM_t CON TODOS LOS VALORES ALMACENADOS EN MEMORIA.
+// Devuelve: BOOLEANO CON EL ESTADO DE LA OPERACION FINALIZADO.
+// ***********************************************************************************************
+bool_t updateMemoryStatus ( memoryFSM_t * memory )
 {
 
+	/* DEFINICION DE VARIABLES LOCALES */
 	uint16_t diffPtr;
 	static bool_t memLeida = FALSE;
 	static bool_t memLimpia = FALSE;
 
-	switch ( _memory.memoryState )
+	/* CAMBIOS DE ESTADOS */
+	switch ( memory->memoryState )
 	{
-	case	MEMORY_RESET:
-		_memory = initCircularMemory();
+
+	/* Estado inicial de la máquina de estado */
+	case	_MEMORY_RESET:
+
+		/* FUNCION PARA INICIALIZAR MEMORIA */
+		*memory = initCircularMemory();
+
+		/* APAGO LOS LEDS */
 		if ( !ledsOff( ledSequence, CANTIDADLEDS ) ) blinkError (ERROR_OFF);
 		break;
 
-	case	MEMORY_WAIT_KEY:
-		/* Acciones que se realizan en este estado */
+	/* Se está a la espera de acciones asociadas a las teclas */
+	case	_MEMORY_WAIT_KEY:
+
+		/* INDICACION VISUAL DEL ESTADO */
 		if ( !ledsOff( ledSequence, CANTIDADLEDS ) ) blinkError (ERROR_OFF);
 		if ( !ledOn ( LEDB ) ) blinkError (ERROR_OFF);
 		finalizarADC ( );
-		/* Verifico teclas presionadas */
+
+		/* SE VERIFICA ESTADO DE TECLAS */
 		if ( actualizarKeyFSM ( &teclaUNO ) ) {
-			_memory.memoryState = MEMORY_ADQ ;
-			printStateMem( _memory.memoryState );
+
+			/* ASIGNACION DE ESTADO SIGUIENTE */
+			memory->memoryState = _MEMORY_ADQ;
+			printStateMem( memory->memoryState );
+
+			/* FUNCION PARA CONFIGURAR ADC */
 			inicializarADC( );
+
 		}
 		else if ( actualizarKeyFSM ( &teclaDOS ) ) {
 			if ( memLeida == FALSE )
 			{
-				_memory.memoryState = MEMORY_READ ;
-				printStateMem( _memory.memoryState );
+				/* ASIGNACION DE ESTADO SIGUIENTE */
+				memory->memoryState = _MEMORY_READ;
+				printStateMem( memory->memoryState );
 			}
 			/* Filtro flanco ascendente de tecla DOS */
 			memLeida = FALSE;
@@ -152,77 +191,133 @@ bool_t updateMemoryStatus ()
 		else if ( actualizarKeyFSM ( &teclaTRES ) ) {
 			if ( memLimpia == FALSE )
 			{
-				_memory.memoryState = MEMORY_CLEAN ;
-				printStateMem( _memory.memoryState );
+				/* ASIGNACION DE ESTADO SIGUIENTE */
+				memory->memoryState = _MEMORY_CLEAN ;
+				printStateMem( memory->memoryState );
 			}
 			/* Filtro flanco ascendente de tecla TRES */
 			memLimpia = FALSE;
 		}
-		else _memory.memoryState = MEMORY_WAIT_KEY;
+		/* ASIGNACION DE ESTADO SIGUIENTE */
+		else memory->memoryState = _MEMORY_WAIT_KEY;
 
 		break;
 
-	case	MEMORY_ADQ:
-		/* Acciones que se realizan en este estado */
+	/* Se adquieren datos del conversor analógico digital */
+	case	_MEMORY_ADQ:
+
+		/* INDICACION VISUAL DEL ESTADO */
 		if ( !ledsOff( ledSequence, CANTIDADLEDS ) ) blinkError (ERROR_OFF);
 		if ( !ledOn ( LED1 ) ) blinkError (ERROR_OFF);
-		/* Verifico teclas presionadas */
+
+		/* SE VERIFICA ESTADO TECLA UNO */
 		if ( actualizarKeyFSM ( &teclaUNO ) )
 		{
+
+			/* FUNCION PARA ALMACENAR DATOS ADQUIRIDOS POR ADC */
+			uartWriteString( UART_USB, "\t ->\t ADQUIRIENDO DATOS \t<- \n\r");
 			adquirirADC( bufferAux );
-			_memory.memoryState = MEMORY_STATUS ;
-			printStateMem( _memory.memoryState );
+			uartWriteString( UART_USB, "\t ->\t FIN DE ADQUISICIÓN \t<- \n\r");
+			/* ASIGNACION DE ESTADO SIGUIENTE */
+			memory->memoryState = _MEMORY_STATUS ;
+			printStateMem( memory->memoryState );
+
 		}
 		break;
 
-	case	MEMORY_STATUS:
+	/* Luego de la adquisición, se verifica que haya lugar disponible en memoria */
+	case	_MEMORY_STATUS:
 
-		diffPtr =  _memory.memorySize - _memory.indexW;
+		/* SE CALCULA MEMORIA RESTANTE PARA ESCRIBIR */
+		diffPtr =  memory->memorySize - memory->indexW;
 		if ( diffPtr < BLOQMEMORY ) {
-			//NO Se PUEDE ESCRIBIR
-			uartWriteString( UART_USB, "NO HAY ESPACIO SUFICIENTE PARA ALMACENAR LOS DATOS \n\r");
-			uartWriteString( UART_USB, "POR FAVOR, LIMPIAR MEMORIA \n\r");
-			_memory.memoryState = MEMORY_WAIT_KEY ;
-			printStateMem( _memory.memoryState );
+
+			/* NO SE PUEDE ESCRIBIR HASTA QUE SE HAYA LIMPIADO LA MEMORIA */
+			uartWriteString( UART_USB, "\t ->\t NO HAY ESPACIO SUFICIENTE PARA ALMACENAR LOS DATOS \t<- \n\r");
+			uartWriteString( UART_USB, "\t ->\t POR FAVOR, LIMPIAR MEMORIA \t<- \n\r");
+
+			/* ASIGNACION DE ESTADO SIGUIENTE */
+			memory->memoryState = _MEMORY_WAIT_KEY ;
+			printStateMem( memory->memoryState );
 		}
 		else
 		{
-			_memory.memoryState = MEMORY_WRITE ;
-			printStateMem( _memory.memoryState );
+			/* ASIGNACION DE ESTADO SIGUIENTE */
+			memory->memoryState = _MEMORY_WRITE ;
+			printStateMem( memory->memoryState );
 		}
 		break;
 
-	case	MEMORY_WRITE:
-		writeMemory( buffer, &_memory );
+	/* Estado de escritura donde se almacenarán los datos adquiridos */
+	case	_MEMORY_WRITE:
+
+		/* FUNCION PARA ESCRIBIR MEMORIA */
+		writeMemory( memory );
+
+		/* ASIGNACION DE ESTADO SIGUIENTE */
+		memory->memoryState = _MEMORY_WAIT_KEY ;
+		printStateMem( memory->memoryState );
 		break;
 
-	case	MEMORY_READ:
+	/* Se leen e imprimen los datos almacenados en memoria */
+	case	_MEMORY_READ:
+
+		/* INDICACION VISUAL DEL ESTADO */
 		if ( !ledsOff( ledSequence, CANTIDADLEDS ) ) blinkError (ERROR_OFF);
 		if ( !ledOn ( LED2 ) ) blinkError (ERROR_OFF);
+
 		/* FUNCION PARA LEER MEMORIA */
-		if ( readMemory ( buffer, &_memory ))
-		{
-			delay ( 2000 );		//TODO: HACERLO NO BLOQUEANTE
-			memLeida = TRUE;
-			_memory.memoryState = MEMORY_WAIT_KEY ;
-			printStateMem( _memory.memoryState );
-		}
+		readMemory ( memory );
+
+		/* RETARDO BLOQUEANTE PARA INDICAR VISUALMENTE EL ESTADO */
+		delay ( 2000 );
+		memLeida = TRUE;
+
+		/* ASIGNACION DE ESTADO SIGUIENTE */
+		memory->memoryState = _MEMORY_WAIT_KEY ;
+		printStateMem( memory->memoryState );
 		break;
 
-	case	MEMORY_CLEAN:
+	/* Se limpia la memoria completa */
+	case	_MEMORY_CLEAN:
 
+		/* INDICACION VISUAL DEL ESTADO */
 		if ( !ledsOff( ledSequence, CANTIDADLEDS ) ) blinkError (ERROR_OFF);
 		if ( !ledOn ( LED3 ) ) blinkError (ERROR_OFF);
-		if ( cleanMemory ( buffer ))
+
+		/* FUNCION PARA LEER MEMORIA */
+		if ( cleanMemory ( memory ) )
 		{
-			delay ( 2000 );		//TODO: HACERLO NO BLOQUEANTE
+			/* RETARDO BLOQUEANTE PARA INDICAR VISUALMENTE EL ESTADO */
+			delay ( 2000 );
 			memLimpia = TRUE;
-			_memory = initCircularMemory();
+			uartWriteString( UART_USB, "\t ->\t MEMORIA LIMPIA \t<- \n\r");
 		}
+		else
+		{
+			/* NO SE PUEDE BORRAR LA MEMORIA, RESETEO ESTRUCTURA */
+			uartWriteString( UART_USB, "\t ->\t NO ES POSIBLE LIMPIAR LA MEMORIA \t<- \n\r");
+			uartWriteString( UART_USB, "\t ->\t SE RESETEARA LA MEMORIA Y SU ESTRUCTURA ASOCIADA \t<- \n\r");
+
+			/* FUNCION PARA RESETEAR LA MEMORIA */
+			*memory = rstCircularMemory();
+			break;
+		}
+
+		/* FUNCION PARA INICIALIZAR PUNTERO A MEMORIA */
+		*memory = initCircularMemory();
 		break;
 
+	/* EN CASO DE NO TENER ASIGNADO NINGUN ESTADO,
+	 * SE ASIGNA ESTADO INICIAL DE LA MEF
+	 */
 	default:
+
+		/* ASIGNACION DE ESTADO SIGUIENTE */
+		memory->memoryState = _MEMORY_WAIT_KEY ;
+		printStateMem( memory->memoryState );
 		break;
+
 	}
 	return TRUE;
 }

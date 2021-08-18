@@ -7,6 +7,7 @@
  *===========================================================================*/
 
 #include "controladorADC.h"
+#include "controladorUART.h"
 
 delay_t delayADC;
 
@@ -56,12 +57,12 @@ void finalizarADC ()
  * Released under GPLv3.
 
  */
-char* itoa(int value, char* result, int base) {
+char* itoa(uint16_t value, char* result, uint16_t base) {
 	// check that the base if valid
 	if (base < 2 || base > 36) { *result = '\0'; return result; }
 
 	char* ptr = result, *ptr1 = result, tmp_char;
-	int tmp_value;
+	uint16_t tmp_value;
 
 	do {
 		tmp_value = value;
