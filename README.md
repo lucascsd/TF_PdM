@@ -30,7 +30,7 @@ Se implementará una MEF para el antirebote de las teclas.
 ![](https://github.com/lucascsd/TF_PdM/blob/main/image/modularizacion.svg)
 
 #### Maquina de estado finito del controlador de memoria
-![](https://github.com/lucascsd/TF_PdM/blob/main/image/MEF_memoria.svg)
+![](https://github.com/lucascsd/TF_PdM/blob/main/image/MEF_memoria_1.svg)
 
 ###### Archivos de modularización
 | File name | hearders                    |

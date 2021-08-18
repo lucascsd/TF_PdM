@@ -53,6 +53,6 @@ void printStateDebounce( stateKey_t estadoTecla );
 void printStateKey( uint8_t teclaPresionada );
 void printStateMem( stateMem_t state );
 void printMemoryRead();
-void printAddressPtr( uint16_t	* dir );
+void printBlockMemoryRead( memoryFSM_t * memory );
 
 #endif /* PRACTICAFINAL_PDM_TF_MEMORIA_INC_CONTROLADORUART_H_ */

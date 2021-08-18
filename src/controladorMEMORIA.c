@@ -85,7 +85,7 @@ void writeMemory ( memoryFSM_t * memory )
 void readMemory ( memoryFSM_t * memory )
 {
 
-	/* FUNCION DE IMPRESON DE VALORES */
+	/* FUNCION PARA LECTURA DE VALORES */
 	printMemoryRead( memory );
 
 }
@@ -94,21 +94,12 @@ void readMemory ( memoryFSM_t * memory )
 // Recibe: 	PUNTERO A ESTRUCTURA DE TIPO memoryFSM_t CON TODOS LOS VALORES ALMACENADOS EN MEMORIA.
 // Devuelve: BOOLEANO CON EL ESTADO DE LA OPERACION FINALIZADO.
 // ************************************************************************************************
-bool_t readBlockMemory ( memoryFSM_t * memory )
+void readBlockMemory ( memoryFSM_t * memory )
 {
-	/* TODO: USAR PUNTERO DE
-	 * LECTURA PTRREAD.
-	 */
-	bool_t readComplete = TRUE;
-	for ( uint8_t i = 0; i < BLOQMEMORY; i++)
-	{
-		printf ("\t\tDato %d: %d \n\r", memory->indexR, *( memory->ptrWrite + memory->indexR ) );
-		printf ("\t\tDato %d: %d \n\r", i, buffer[i] );
-		memory->indexR++;
-	}
-	memory->memoryState = _MEMORY_WAIT_KEY ;
-	printStateMem( memory->memoryState );
-	return readComplete;
+
+	/* FUNCION PARA LECTURA DE BLOQUES DE VALORES */
+	printBlockMemoryRead ( memory );
+
 }
 
 //***** FUNCIÓN DE LIMPIEZA DE MEMORIA ***********************************************************
@@ -144,6 +135,7 @@ bool_t updateMemoryStatus ( memoryFSM_t * memory )
 	uint16_t diffPtr;
 	static bool_t memLeida = FALSE;
 	static bool_t memLimpia = FALSE;
+	static bool_t bloqLeida = FALSE;
 
 	/* CAMBIOS DE ESTADOS */
 	switch ( memory->memoryState )
@@ -159,7 +151,7 @@ bool_t updateMemoryStatus ( memoryFSM_t * memory )
 		if ( !ledsOff( ledSequence, CANTIDADLEDS ) ) blinkError (ERROR_OFF);
 		break;
 
-	/* Se está a la espera de acciones asociadas a las teclas */
+		/* Se está a la espera de acciones asociadas a las teclas */
 	case	_MEMORY_WAIT_KEY:
 
 		/* INDICACION VISUAL DEL ESTADO */
@@ -198,12 +190,22 @@ bool_t updateMemoryStatus ( memoryFSM_t * memory )
 			/* Filtro flanco ascendente de tecla TRES */
 			memLimpia = FALSE;
 		}
+		else if ( actualizarKeyFSM ( &teclaCUATRO ) ) {
+			if ( bloqLeida == FALSE )
+			{
+				/* ASIGNACION DE ESTADO SIGUIENTE */
+				memory->memoryState = _MEMORY_READ_BLOCK ;
+				printStateMem( memory->memoryState );
+			}
+			/* Filtro flanco ascendente de tecla TRES */
+			bloqLeida = FALSE;
+		}
 		/* ASIGNACION DE ESTADO SIGUIENTE */
 		else memory->memoryState = _MEMORY_WAIT_KEY;
 
 		break;
 
-	/* Se adquieren datos del conversor analógico digital */
+		/* Se adquieren datos del conversor analógico digital */
 	case	_MEMORY_ADQ:
 
 		/* INDICACION VISUAL DEL ESTADO */
@@ -225,7 +227,7 @@ bool_t updateMemoryStatus ( memoryFSM_t * memory )
 		}
 		break;
 
-	/* Luego de la adquisición, se verifica que haya lugar disponible en memoria */
+		/* Luego de la adquisición, se verifica que haya lugar disponible en memoria */
 	case	_MEMORY_STATUS:
 
 		/* SE CALCULA MEMORIA RESTANTE PARA ESCRIBIR */
@@ -248,7 +250,7 @@ bool_t updateMemoryStatus ( memoryFSM_t * memory )
 		}
 		break;
 
-	/* Estado de escritura donde se almacenarán los datos adquiridos */
+		/* Estado de escritura donde se almacenarán los datos adquiridos */
 	case	_MEMORY_WRITE:
 
 		/* FUNCION PARA ESCRIBIR MEMORIA */
@@ -259,7 +261,7 @@ bool_t updateMemoryStatus ( memoryFSM_t * memory )
 		printStateMem( memory->memoryState );
 		break;
 
-	/* Se leen e imprimen los datos almacenados en memoria */
+		/* Se leen e imprimen los datos almacenados en memoria */
 	case	_MEMORY_READ:
 
 		/* INDICACION VISUAL DEL ESTADO */
@@ -278,7 +280,7 @@ bool_t updateMemoryStatus ( memoryFSM_t * memory )
 		printStateMem( memory->memoryState );
 		break;
 
-	/* Se limpia la memoria completa */
+		/* Se limpia la memoria completa */
 	case	_MEMORY_CLEAN:
 
 		/* INDICACION VISUAL DEL ESTADO */
@@ -308,9 +310,27 @@ bool_t updateMemoryStatus ( memoryFSM_t * memory )
 		*memory = initCircularMemory();
 		break;
 
-	/* EN CASO DE NO TENER ASIGNADO NINGUN ESTADO,
-	 * SE ASIGNA ESTADO INICIAL DE LA MEF
-	 */
+
+	case _MEMORY_READ_BLOCK:
+
+		/* INDICACION VISUAL DEL ESTADO */
+		if ( !ledsOff( ledSequence, CANTIDADLEDS ) ) blinkError (ERROR_OFF);
+		if ( !ledOn ( LEDG ) ) blinkError (ERROR_OFF);
+
+		/* FUNCION PARA LEER BLOQUES DE MEMORIA */
+		readBlockMemory ( memory );
+
+		/* RETARDO BLOQUEANTE PARA INDICAR VISUALMENTE EL ESTADO */
+		delay ( 2000 );
+		bloqLeida = TRUE;
+		uartWriteString( UART_USB, "\t ->\t BLOQUE MEMORIA LEIDO \t<- \n\r");
+
+		/* ASIGNACION DE ESTADO SIGUIENTE */
+		memory->memoryState = _MEMORY_WAIT_KEY ;
+		printStateMem( memory->memoryState );
+		break;
+
+		/* EN CASO DE NO TENER ASIGNADO NINGUN ESTADO, SE ASIGNA ESTADO INICIAL DE LA MEF */
 	default:
 
 		/* ASIGNACION DE ESTADO SIGUIENTE */

@@ -29,6 +29,7 @@ typedef enum
 	_MEMORY_READ,
 	_MEMORY_WAIT_KEY,
 	_MEMORY_CLEAN,
+	_MEMORY_READ_BLOCK
 }stateMem_t ;
 
 /* Estructura de datos para control de FSM de la memoria */
@@ -48,6 +49,7 @@ memoryFSM_t rstCircularMemory ( void );
 memoryFSM_t initCircularMemory ( void );
 void writeMemory ( memoryFSM_t * memory );
 void readMemory ( memoryFSM_t * memory );
+void readBlockMemory ( memoryFSM_t * memory );
 bool_t cleanMemory ( memoryFSM_t * memory );
 bool_t updateMemoryStatus ( memoryFSM_t * memory );
 
