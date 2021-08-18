@@ -7,18 +7,18 @@ Repositorio para la práctica final de la materia Programación de Microcontrola
 
 Autores: Lucas Zalazar lucas.zalazar6@gmail.com
 
-### Resumen
-La plataforma deberá:
-    Adquirir datos desde ADC. 
-    Guardar en buffer en memoria de tamaño a definir. 
-    Indicar estado de MEF de memoria 
-    Enviar por UART datos y estado de MEF de la memoria.
-    Iniciar la adquisición con el flanco ascendente de una tecla uno. 
-    Detener la adquisición de datos con el flanco descendente de la tecla uno.
-    Verificar disponibilidad de espacio en memoria.
-    Escribir en memoria. 
-    Implementar MEF para controlar la memoria.
-    Implementar MEF para el antirebote de las teclas.
+### Funciones de la plataforma
+
+ - Adquirir datos desde ADC.
+ - Guardar en buffer en memoria de tamaño a definir. 
+ - Indicar estado de MEF de memoria.
+ - Enviar por UART datos y estado de MEF de la memoria.
+ - Iniciar la adquisición con el flanco ascendente de una tecla uno. 
+ - Detener la adquisición de datos con el flanco descendente de la tecla uno.
+ - Verificar disponibilidad de espacio en memoria.
+ - Escribir en memoria. 
+ - Implementar MEF para controlar la memoria.
+ - Implementar MEF para el antirebote de las teclas.
 
 #### Condiciones de funcionamiento
 ###### Dependencias externas:
