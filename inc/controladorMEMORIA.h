@@ -9,8 +9,10 @@
 #ifndef PRACTICAFINAL_PDM_TF_MEMORIA_INC_CONTROLADORMEMORIA_H_
 #define PRACTICAFINAL_PDM_TF_MEMORIA_INC_CONTROLADORMEMORIA_H_
 
+/* sAPI */
 #include "sapi.h"
 
+/* MODULOS */
 #include "controladorLED.h"
 #include "controladorTECLA.h"
 #include "controladorADC.h"
@@ -35,13 +37,13 @@ typedef enum
 /* Estructura de datos para control de FSM de la memoria */
 typedef struct
 {
-	uint16_t	*ptrWrite;
-	uint16_t	*ptrRead;
-	stateMem_t	memoryState;
-	uint16_t	memorySize;
-	uint16_t	bufferSize;
-	uint16_t		indexW;
-	uint16_t		indexR;
+	uint16_t	*ptrWrite;		/* Puntero de escritura */
+	uint16_t	*ptrRead;		/* Puntero de lectura */
+	stateMem_t	memoryState;	/* Estados de la MEF */
+	uint16_t	memorySize;		/* Tamaño de la memoria completa */
+	uint16_t	bufferSize;		/* Tamaño de bloque de memoria para leer y escribir */
+	uint16_t		indexW;		/* Indice de escritura */
+	uint16_t		indexR;		/* Indice de lectura */
 }memoryFSM_t;
 
 /* FUNCIONES DE MEMORIA */

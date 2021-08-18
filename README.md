@@ -8,14 +8,17 @@ Repositorio para la práctica final de la materia Programación de Microcontrola
 Autores: Lucas Zalazar lucas.zalazar6@gmail.com
 
 ### Resumen
-La plataforma recibirá desde el ADC, datos para guardar en un buffer en memoria de tamaño a definir. 
-Se indicará el estado que posee y enviará por UART el contenido y estado de la memoria cada vez que se lo requiera. 
-La adquisición iniciará con el flanco ascendente de una tecla y se dejará de adquirir datos con el flanco descendente.
-Se chequeará la disponibilidad en memoria y se realizará la escritura en memoria. 
-El buffer está manejado por una MEF para verificación, escritura y lectura.
-Mediante UART, se indicará el estado de la memoria y el tipo de evento que se realiza  sobre la misma. 
-Se implementará un controlador para la UART como para el ADC.
-Se implementará una MEF para el antirebote de las teclas.
+La plataforma deberá:
+    Adquirir datos desde ADC. 
+    Guardar en buffer en memoria de tamaño a definir. 
+    Indicar estado de MEF de memoria 
+    Enviar por UART datos y estado de MEF de la memoria.
+    Iniciar la adquisición con el flanco ascendente de una tecla uno. 
+    Detener la adquisición de datos con el flanco descendente de la tecla uno.
+    Verificar disponibilidad de espacio en memoria.
+    Escribir en memoria. 
+    Implementar MEF para controlar la memoria.
+    Implementar MEF para el antirebote de las teclas.
 
 #### Condiciones de funcionamiento
 ###### Dependencias externas:
@@ -32,6 +35,49 @@ Se implementará una MEF para el antirebote de las teclas.
 #### Maquina de estado finito del controlador de memoria
 ![](https://github.com/lucascsd/TF_PdM/blob/main/image/MEF_memoria_1.svg)
 
+#### Código del controlador de memoria
+
+```
+/* Estados de la FSM de las teclas */
+typedef enum
+{
+	_MEMORY_RESET,
+	_MEMORY_ADQ,
+	_MEMORY_STATUS,
+	_MEMORY_WRITE,
+	_MEMORY_READ,
+	_MEMORY_WAIT_KEY,
+	_MEMORY_CLEAN,
+	_MEMORY_READ_BLOCK
+}stateMem_t ;
+```
+
+```
+/* Estructura de datos para control de FSM de la memoria */
+typedef struct
+{
+	uint16_t	*ptrWrite;		/* Puntero de escritura */
+	uint16_t	*ptrRead;		/* Puntero de lectura */
+	stateMem_t	memoryState;	/* Estados de la MEF */
+	uint16_t	memorySize;		/* Tamaño de la memoria completa */
+	uint16_t	bufferSize;		/* Tamaño de bloque de memoria para leer y escribir */
+	uint16_t		indexW;		/* Índice de escritura */
+	uint16_t		indexR;		/* Índice de lectura */
+}memoryFSM_t;
+
+```
+
+```
+/* FUNCIONES DE MEMORIA */
+memoryFSM_t rstCircularMemory ( void );
+memoryFSM_t initCircularMemory ( void );
+void writeMemory ( memoryFSM_t * memory );
+void readMemory ( memoryFSM_t * memory );
+void readBlockMemory ( memoryFSM_t * memory );
+bool_t cleanMemory ( memoryFSM_t * memory );
+bool_t updateMemoryStatus ( memoryFSM_t * memory );
+
+```
 ###### Archivos de modularización
 | File name | hearders                    |
 | ------------- | ------------------------------ |

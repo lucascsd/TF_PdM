@@ -9,10 +9,13 @@
 #ifndef PRACTICAFINAL_PDM_TF_MEMORIA_INC_CONTROLADORADC_H_
 #define PRACTICAFINAL_PDM_TF_MEMORIA_INC_CONTROLADORADC_H_
 
+/* sAPI */
 #include "sapi.h"
 
+/* DELAY PARA ADC */
 #define DELAYADC	100
 
+/* FUNCIONES PARA ADC */
 void inicializarADC (); //Se inicializa y configura la adquisición ADC.
 void adquirirADC ( uint16_t * bufferAux );	//Adquiere ADC.
 void finalizarADC (); //Se deshabilita la adquisición de ADC.

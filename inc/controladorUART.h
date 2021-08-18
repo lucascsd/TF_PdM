@@ -46,7 +46,7 @@ static char menu[] =
 		"\n\r"
 		;
 
-//FUNCIONES PARA LA UART
+/* FUNCIONES PARA LA UART */
 void inicializarUART();
 void infoUART();
 void printStateDebounce( stateKey_t estadoTecla );

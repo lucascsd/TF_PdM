@@ -8,20 +8,22 @@
 
 #include "controladorUART.h"
 
+/* FUNCION PARA INICIALIZAR LA UART */
 void inicializarUART() {
 
-	bool_t printOk = FALSE;
 	uartInit ( UART_USB, 115200 );
 	uartWriteString	(UART_USB, "UART_USB configurada.\n\r" );
 
 }
 
+/* FUNCION PARA IMPRESION DE MENSAJE INICIAL */
 void infoUART(){
 
 	uartWriteString( UART_USB, menu );
 
 }
 
+/* FUNCION PARA IMPRESION DEL ESTADO DE LAS TECLAS */
 void printStateDebounce( stateKey_t estadoTecla ){
 
 	char *estadoAntirebote[] = {
@@ -34,6 +36,7 @@ void printStateDebounce( stateKey_t estadoTecla ){
 	uartWriteString( UART_USB, estadoAntirebote[estadoTecla] );
 }
 
+/* FUNCION PARA IMPRESION DE LAS TECLAS */
 void printStateKey( uint8_t teclaPresionada )
 {
 	char *_estadoTecla[] = {
@@ -46,6 +49,7 @@ void printStateKey( uint8_t teclaPresionada )
 	uartWriteString( UART_USB, _estadoTecla[teclaPresionada] );
 }
 
+/* FUNCION PARA IMPRESION DEL ESTADO DE LA MEF DE LA MEMORIA */
 void printStateMem( stateMem_t state ){
 
 	char *_estadoSecuencia[] = {
@@ -64,6 +68,8 @@ void printStateMem( stateMem_t state ){
 
 }
 
+
+/* FUNCION PARA IMPRESION DE LOS VALORES LEIDOS EN MEMORIA */
 void printMemoryRead( memoryFSM_t * memory ){
 
 	char indice[2], valor[10];
@@ -81,7 +87,7 @@ void printMemoryRead( memoryFSM_t * memory ){
 		uartWriteString( UART_USB, ";\r\n" );
 	}
 }
-
+/* FUNCION PARA IMPRESION DE LOS VALORES LEIDOS EN BLOQUES MEMORIA */
 void printBlockMemoryRead( memoryFSM_t * memory ){
 
 	char indice[2], valor[10];

@@ -9,7 +9,10 @@
 #ifndef __TF_MEMORIA_H__
 #define __TF_MEMORIA_H__
 
+/* sAPI */
 #include "sapi.h"
+
+/* MODULOS */
 #include "controladorADC.h"
 #include "controladorMEMORIA.h"
 #include "controladorTECLA.h"
